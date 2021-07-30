@@ -1,6 +1,7 @@
 package org.launchcode.javawebdevtechjobspersistent.controllers;
 
 import org.launchcode.javawebdevtechjobspersistent.dataRepos.EmployerRepository;
+import org.launchcode.javawebdevtechjobspersistent.dataRepos.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,10 @@ public class EmployerController {
     private EmployerRepository employerRepository;
 
     @GetMapping
-    public String displayEmployerIndex(Model model) {
+    public String displayEmployers(Model model) {
         model.addAttribute("employers", employerRepository.findAll());
-            return "employers/index";
+
+        return "employers/index";
     }
 
     @GetMapping("add")
@@ -39,9 +41,9 @@ public class EmployerController {
         }
 
         employerRepository.save(newEmployer);
+
         return "redirect:";
     }
-
 
     @GetMapping("view/{employerId}")
     public String displayViewEmployer(Model model, @PathVariable int employerId) {

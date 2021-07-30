@@ -1,6 +1,8 @@
 package org.launchcode.javawebdevtechjobspersistent.controllers;
 
+import org.launchcode.javawebdevtechjobspersistent.dataRepos.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.dataRepos.JobRepository;
+import org.launchcode.javawebdevtechjobspersistent.dataRepos.SkillRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
 import org.launchcode.javawebdevtechjobspersistent.models.JobData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,37 +20,46 @@ import java.util.HashMap;
 @RequestMapping(value = "list")
 public class ListController {
 
-    @Autowired
-    private JobRepository jobRepository;
 
-    static HashMap<String, String> columnChoices = new HashMap<>();
 
-    public ListController () {
+        @Autowired
+        private JobRepository jobRepository;
 
-        columnChoices.put("all", "All");
-        columnChoices.put("employer", "Employer");
-        columnChoices.put("skill", "Skill");
+        @Autowired
+        private EmployerRepository employerRepository;
 
-    }
+        @Autowired
+        private SkillRepository skillRepository;
 
-    @RequestMapping("")
-    public String list(Model model) {
+        static HashMap<String, String> columnChoices = new HashMap<>();
 
-        return "list";
-    }
+        public ListController () {
 
-    @RequestMapping(value = "jobs")
-    public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam String value) {
-        Iterable<Job> jobs;
-        if (column.toLowerCase().equals("all")){
-            jobs = jobRepository.findAll();
-            model.addAttribute("title", "All Jobs");
-        } else {
-            jobs = JobData.findByColumnAndValue(column, value, jobRepository.findAll());
-            model.addAttribute("title", "Jobs with " + columnChoices.get(column) + ": " + value);
+            columnChoices.put("all", "All");
+            columnChoices.put("employer", "Employer");
+            columnChoices.put("skill", "Skill");
+
         }
-        model.addAttribute("jobs", jobs);
 
-        return "list-jobs";
+        @RequestMapping("")
+        public String list(Model model) {
+            model.addAttribute("skills", skillRepository.findAll());
+            model.addAttribute("employers", employerRepository.findAll());
+            return "list";
+        }
+
+        @RequestMapping(value = "jobs")
+        public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam String value) {
+            Iterable<Job> jobs;
+            if (column.toLowerCase().equals("all")){
+                jobs = jobRepository.findAll();
+                model.addAttribute("title", "All Jobs");
+            } else {
+                jobs = JobData.findByColumnAndValue(column, value, jobRepository.findAll());
+                model.addAttribute("title", "Jobs with " + columnChoices.get(column) + ": " + value);
+            }
+            model.addAttribute("jobs", jobs);
+
+            return "list-jobs";
+        }
     }
-}
